@@ -1,12 +1,12 @@
 # Import Dependencies
-from scipy.io import loadmat
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
+import os
 import copy
 import time
-import os
+import numpy as np
+import pandas as pd
+from scipy.io import loadmat
 from datetime import datetime
+import matplotlib.pyplot as plt
 
 
 # Load Data
@@ -18,12 +18,12 @@ df = pd.DataFrame(mdata)
 df = df.rename(columns={0: 'x', 1: 'y'})
 max_val = [max(df['x'])+2, max(df['y'])+2]
 
+
 # Initial Assignment Function
-
-
 def assignment(df, centroids):
+
+    # Calculate distance from every centroid
     for i in centroids.keys():
-        # sqrt((x1 - x2)^2 - (y1 - y2)^2)
         df['distance_from_{}'.format(i)] = (
             np.sqrt(
                 (df['x'] - centroids[i][0]) ** 2
@@ -32,29 +32,34 @@ def assignment(df, centroids):
         )
     centroid_distance_cols = [
         'distance_from_{}'.format(i) for i in centroids.keys()]
+
+    # Determine closest centroid
     df['closest'] = df.loc[:, centroid_distance_cols].idxmin(axis=1)
     df['distance'] = df.loc[:, centroid_distance_cols].min(axis=1)
     df['closest'] = df['closest'].map(
         lambda x: int(x.lstrip('distance_from_')))
 
+    # Assign centroid's color to point
     df['color'] = df['closest'].map(lambda x: colmap[x])
     return df
 
 
+# Color-map
 colmap = {1: '#222222', 2: '#ff7c00', 3: '#023eff', 4: '#e8000b', 5: '#8b2be2',
           6: '#1ac938', 7: '#f14cc1', 8: '#a3a3a3', 9: '#ffc400', 10: '#00d7ff'}
 
+# Create folder to hold images
 os.mkdir("Random/")
 
-
+# Run twice
 for graph_round in range(2):
 
+    # Initialize list for objective plot
     obj_k = []
     obj_dist = []
 
+    # Iterate over k
     for k in range(2, 11):
-
-        obj_k.append(k)
 
         # Randomomize Centroids
         np.random.seed(datetime.now().microsecond)
@@ -63,6 +68,7 @@ for graph_round in range(2):
             for i in range(k)
         }
 
+        # Initial Random Centroid Assignment
         fig = plt.figure(figsize=(5, 5))
         fname = "Random/" + str(k) + "-Cluster " + \
             "Initial Random Centroid Assignment"
@@ -72,8 +78,8 @@ for graph_round in range(2):
             plt.scatter(*centroids[i], color=colmap[i], marker="o")
         plt.xlim(0, max_val[0])
         plt.ylim(0, max_val[1])
-#         plt.show()
         plt.savefig(fname, dpi='figure')
+
         # Call to initial assignment function
         df = assignment(df, centroids)
 
@@ -101,6 +107,7 @@ for graph_round in range(2):
             if closest_centroids.equals(df['closest']):
                 break
 
+        # Final Cluster Assignment (Random Strategy)
         fig = plt.figure(figsize=(5, 5))
         fname = "Random/" + str(k) + "-Cluster " + \
             "Final Cluster Assignment (Random Strategy)"
@@ -114,16 +121,24 @@ for graph_round in range(2):
                         alpha=0.75, marker="X", s=100)
         plt.xlim(0, max_val[0])
         plt.ylim(0, max_val[1])
-#         plt.show()
         plt.savefig(fname, dpi='figure')
 
+        # Update list to plot objective function
+        obj_k.append(k)
         obj_dist.append(df['distance'].sum())
 
+        # Print cluster and Objective
+        for cluster, objective in zip(obj_k, obj_dist):
+            print("k=" + str(cluster) + " Objective function: "+str(objective))
+
+    # Plot objective function
     fig = plt.figure(figsize=(10, 10))
     plt.title("Objective Function (vs) k-Clusters : Random Centroid")
     plt.ylabel('Objective Function')
     plt.xlabel('k-Clusters')
     plt.grid(True)
+
+    # display point label
     for x, y in zip(obj_k, obj_dist):
 
         label = "({},{:.2f})".format(x, y)
