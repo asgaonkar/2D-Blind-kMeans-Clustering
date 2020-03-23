@@ -1,12 +1,13 @@
 # Import Dependencies
-from scipy.io import loadmat
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import copy
-import sys
 import os
+import sys
+import copy
+import time
+import numpy as np
+import pandas as pd
+from scipy.io import loadmat
 from datetime import datetime
+import matplotlib.pyplot as plt
 
 # Load Data
 mat = loadmat('AllSamples.mat')
@@ -17,25 +18,27 @@ df = pd.DataFrame(mdata)
 df = df.rename(columns={0: 'x', 1: 'y'})
 max_val = [max(df['x'])+2, max(df['y'])+2]
 
+# Create folder to hold images
 os.mkdir("Farthest/")
 
-# function to compute euclidean distance
 
-
+# Calculate distance
 def distance(p1, p2):
     return np.sum((p1 - p2)**2)
 
-# Centroid Initialization
 
-
+# Centroid Initialization Function
 def seeds(data, k):
 
+    # Initialize centroid and create a random centroid
     centroids = []
     centroids.append(data[np.random.randint(
         data.shape[0]), :])
 
+    # Appoint other needed centroids using farthest distance
     for _ in range(k - 1):
 
+        # calculate distance for every point
         dist = []
         for i in range(data.shape[0]):
             point = data[i, :]
@@ -46,28 +49,28 @@ def seeds(data, k):
                 d = min(d, temp_dist)
             dist.append(d)
 
-        # select data point with maximum distance as our next centroid
+        # select data point with maximum distance as next centroid
         dist = np.array(dist)
         next_centroid = data[np.argmax(dist), :]
         centroids.append(next_centroid)
         dist = []
 
-        dicts = {}
+    # Convert from np.array to dict
+    dicts = {}
     k = 0
     for i in centroids:
         dicts[k+1] = [i[0], i[1]]
         k += 1
-
     centroids = dicts
 
     return centroids
 
+
 # Initial Assignment Function
-
-
 def assignment(df, centroids):
+
+    # Calculate distance from every centroid
     for i in centroids.keys():
-        # sqrt((x1 - x2)^2 - (y1 - y2)^2)
         df['distance_from_{}'.format(i)] = (
             np.sqrt(
                 (df['x'] - centroids[i][0]) ** 2
@@ -76,32 +79,37 @@ def assignment(df, centroids):
         )
     centroid_distance_cols = [
         'distance_from_{}'.format(i) for i in centroids.keys()]
+
+    # Determine closest centroid
     df['closest'] = df.loc[:, centroid_distance_cols].idxmin(axis=1)
     df['distance'] = df.loc[:, centroid_distance_cols].min(axis=1)
     df['closest'] = df['closest'].map(
         lambda x: int(x.lstrip('distance_from_')))
+
+    # Assign centroid's color to point
     df['color'] = df['closest'].map(lambda x: colmap[x])
     return df
 
 
+# Color-map
 colmap = {1: '#222222', 2: '#ff7c00', 3: '#023eff', 4: '#e8000b', 5: '#8b2be2',
           6: '#1ac938', 7: '#f14cc1', 8: '#a3a3a3', 9: '#ffc400', 10: '#00d7ff'}
 
-
+# Run twice
 for graph_round in range(2):
 
+    # Initialize list for objective plot
     obj_k = []
     obj_dist = []
 
+    # Iterate over k
     for k in range(2, 11):
 
-        obj_k.append(k)
-
-        # Randomomize Centroids
+        # Strategise Centroids
         np.random.seed(datetime.now().microsecond)
-
         centroids = seeds(mdata, k)
 
+        # Initial Random Centroid Assignment
         fig = plt.figure(figsize=(5, 5))
         fname = "Farthest/" + str(k) + "-Cluster " + \
             "Initial Random Centroid Assignment"
@@ -111,7 +119,6 @@ for graph_round in range(2):
             plt.scatter(*centroids[i], color=colmap[i])
         plt.xlim(0, max_val[0])
         plt.ylim(0, max_val[1])
-#         plt.show()
         plt.savefig(fname, dpi='figure')
 
         # Call to initial assignment function
@@ -141,6 +148,7 @@ for graph_round in range(2):
             if closest_centroids.equals(df['closest']):
                 break
 
+        # Final Cluster Assignment
         fig = plt.figure(figsize=(5, 5))
         fname = "Farthest/" + str(k) + "-Cluster " + "Final Cluster Assignment"
         plt.title(fname)
@@ -153,16 +161,24 @@ for graph_round in range(2):
                         alpha=0.75, marker="X", s=100)
         plt.xlim(0, max_val[0])
         plt.ylim(0, max_val[1])
-#         plt.show()
         plt.savefig(fname, dpi='figure')
 
+        # Update list to plot objective function
+        obj_k.append(k)
         obj_dist.append(df['distance'].sum())
 
+        # Print cluster and Objective
+        for cluster, objective in zip(obj_k, obj_dist):
+            print("k=" + str(cluster) + " Objective function: "+str(objective))
+
+    # Plot objective function
     fig = plt.figure(figsize=(10, 10))
     plt.title("Objective Function (vs) k-Clusters")
     plt.ylabel('Objective Function')
     plt.xlabel('k-Clusters')
     plt.grid(True)
+
+    # display point label
     for x, y in zip(obj_k, obj_dist):
 
         label = "({},{:.2f})".format(x, y)
