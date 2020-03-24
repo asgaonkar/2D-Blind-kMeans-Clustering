@@ -58,7 +58,7 @@ k | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
 **Objective** | 1921.033 | 1293.777 | 797.960 | 651.403 | 476.118 | 362.866 | 350.209 | 258.431 | 239.065 |
 
 
-![Objective Function vs k-Cluster](https://raw.githubusercontent.com/asgaonkar/2D-Blind-kMeans-Clustering/master/Images/Objective%20Function%20(vs)%20k-Clusters%20-%20Farthest%20Centroid%200.png)
+![Objective Function vs k-Cluster](https://raw.githubusercontent.com/asgaonkar/2D-Blind-kMeans-Clustering/master/Images/Objective%20Function%20(vs)%20k-Clusters%20-%20Farthest%20Centroid_Github.png)
 
 ## Tasks Completed
 1.    Implement the k-means algorithm with Strategy 1.
