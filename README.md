@@ -60,6 +60,12 @@ k | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
 
 ![Objective Function vs k-Cluster](https://raw.githubusercontent.com/asgaonkar/2D-Blind-kMeans-Clustering/master/Images/Objective%20Function%20(vs)%20k-Clusters%20-%20Farthest%20Centroid%200.png)
 
+## Tasks Completed
+1.    Implement the k-means algorithm with Strategy 1.
+2.    Compute the objective function as a function of k (k = 2, 3, …, 10).
+3.    Implement the k-means algorithm with Strategy 2.
+4.    Compute the objective function as a function of k (k = 2, 3, …, 10).
+
 ## Author
 
 **Atit Gaonkar** - [Github](https://github.com/asgaonkar) - [LinkedIn](https://www.linkedin.com/in/atit-gaonkar/)
