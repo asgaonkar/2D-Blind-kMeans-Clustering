@@ -42,7 +42,7 @@ k | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
 ------------ | ------------ | ------------- | ------------ | ------------- |------------ | ------------- |------------ | ------------- |------------ |
 **Objective** | 2498.11 | 1338.11 | 788.96 | 592.43 | 476.12 | 367.60 | 305.45 | 255.83 | 214.99 |
 
-![Objective Function vs k-Cluster](https://raw.githubusercontent.com/asgaonkar/2D-Blind-kMeans-Clustering/master/Images/Objective%20Function%20(vs)%20k-Clusters%20-%20Random%20Centroid%200.png)
+![Objective Function vs k-Cluster](https://raw.githubusercontent.com/asgaonkar/2D-Blind-kMeans-Clustering/master/Images/Objective%20Function%20(vs)%20k-Clusters%20-%20Random%20Centroid_Github.png)
 
 
 
